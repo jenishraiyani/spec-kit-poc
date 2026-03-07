@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+.vs/
+.vscode/
+.git/
+Dockerfile*
+**/docker-compose*.yml
+*.log
+.env
+.env.*
+coverage/
+node_modules/
+publish/

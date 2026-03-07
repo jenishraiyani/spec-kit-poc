@@ -1,0 +1,32 @@
+bin/
+obj/
+**/bin/
+**/obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.DotSettings.user
+*.db
+*.sql
+*.pdb
+publish/
+.DS_Store
+
+# Logs
+*.log
+
+# Build artifacts
+artifacts/
+TestResults/
+test-results/
+coverage/
+
+# Environment
+.env
+.env.*
+*.local
+
+# IDEs
+.idea/
