@@ -20,6 +20,9 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(Guid eventId, [FromBody] RegistrationCreateDto dto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             try
             {
                 var (id, status) = await _registerService.RegisterAsync(eventId, dto.ResidentId);
@@ -27,6 +30,11 @@ namespace Api.Controllers
                     return CreatedAtAction(null, new { id }, new { id });
                 else
                     return Accepted(new { id, status = "Waitlisted" });
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(ex.ParamName ?? string.Empty, ex.Message);
+                return ValidationProblem(ModelState);
             }
             catch (InvalidOperationException ex)
             {

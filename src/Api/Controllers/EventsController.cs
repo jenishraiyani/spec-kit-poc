@@ -23,8 +23,10 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] EventCreateDto dto)
         {
-            if (dto.EndTime <= dto.StartTime) return BadRequest("EndTime must be after StartTime");
-            var id = await _createEventService.CreateEventAsync(dto.Title, dto.Description, dto.Location, dto.StartTime, dto.EndTime, dto.Capacity, dto.RegistrationOpen, dto.RegistrationClose, dto.Timezone);
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            var id = await _createEventService.CreateEventAsync(dto.Title, dto.Description, dto.Location, dto.StartTime, dto.EndTime, dto.Capacity, dto.RegistrationOpen, dto.RegistrationClose, dto.Timezone ?? "UTC");
             return CreatedAtAction(nameof(Get), new { id }, new { id });
         }
 
