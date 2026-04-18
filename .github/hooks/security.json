@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/copilot-coding-agent-hooks.json",
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "id": "log-session-start",
+        "run": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/log-session-start.ps1"
+      }
+    ],
+    "preToolUse": [
+      {
+        "id": "log-all-tool-executions",
+        "run": "powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/log-pretool.ps1"
+      }
+    ]
+  }
+}
