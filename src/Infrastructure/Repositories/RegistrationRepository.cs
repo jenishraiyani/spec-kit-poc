@@ -60,6 +60,15 @@ namespace Infrastructure.Repositories
             var ev = await _db.Events.FirstOrDefaultAsync(e => e.Id == eventId);
             if (ev == null) throw new InvalidOperationException("Event not found");
 
+            if (ev.Status == Domain.Entities.EventStatus.Cancelled)
+                throw new ArgumentException("Registration is not allowed for a cancelled event.", nameof(eventId));
+
+            var now = DateTimeOffset.UtcNow;
+            if (ev.RegistrationOpen.HasValue && now < ev.RegistrationOpen.Value)
+                throw new ArgumentException("Registration for this event has not opened yet.", nameof(eventId));
+            if (ev.RegistrationClose.HasValue && now > ev.RegistrationClose.Value)
+                throw new ArgumentException("Registration for this event has closed.", nameof(eventId));
+
             var enrolledCount = await _db.Registrations.CountAsync(r => r.EventId == eventId && r.Status == RegistrationStatus.Enrolled);
             if (enrolledCount < ev.Capacity)
             {

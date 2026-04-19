@@ -20,14 +20,29 @@ namespace Unit.Tests
             public Task<RegistrationStatus> EnrollOrWaitlistAsync(Guid eventId, Registration registration) => Task.FromResult(ReturnStatus);
         }
 
+        private class FakeAuditRepo : IAuditRepository
+        {
+            public Task AddAsync(Audit audit) => Task.CompletedTask;
+        }
+
         [Fact]
         public async Task RegisterForEvent_Returns_Enrolled_Status()
         {
             var repo = new FakeRegistrationRepo { ReturnStatus = RegistrationStatus.Enrolled };
-            var svc = new RegisterForEventService(repo);
+            var svc = new RegisterForEventService(repo, new FakeAuditRepo());
             var (id, status) = await svc.RegisterAsync(Guid.NewGuid(), Guid.NewGuid());
             Assert.NotEqual(Guid.Empty, id);
             Assert.Equal(RegistrationStatus.Enrolled, status);
+        }
+
+        [Fact]
+        public async Task RegisterForEvent_Returns_Waitlisted_Status()
+        {
+            var repo = new FakeRegistrationRepo { ReturnStatus = RegistrationStatus.Waitlisted };
+            var svc = new RegisterForEventService(repo, new FakeAuditRepo());
+            var (id, status) = await svc.RegisterAsync(Guid.NewGuid(), Guid.NewGuid());
+            Assert.NotEqual(Guid.Empty, id);
+            Assert.Equal(RegistrationStatus.Waitlisted, status);
         }
     }
 }

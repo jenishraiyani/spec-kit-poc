@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
-using Infrastructure.Repositories;
 using Xunit;
 
 namespace Unit.Tests
@@ -25,11 +24,16 @@ namespace Unit.Tests
             public Task UpdateAsync(Event @event) => Task.CompletedTask;
         }
 
+        private class FakeAuditRepo : IAuditRepository
+        {
+            public Task AddAsync(Audit audit) => Task.CompletedTask;
+        }
+
         [Fact]
         public async Task CreateEvent_Service_Adds_New_Event()
         {
             var repo = new FakeEventRepository();
-            var svc = new CreateEventService(repo);
+            var svc = new CreateEventService(repo, new FakeAuditRepo());
             var id = await svc.CreateEventAsync("Title", "Desc", "Loc", DateTimeOffset.UtcNow.AddDays(1), DateTimeOffset.UtcNow.AddDays(1).AddHours(2), 10, null, null, "UTC");
             Assert.NotEqual(Guid.Empty, id);
             Assert.NotNull(repo.LastAdded);
